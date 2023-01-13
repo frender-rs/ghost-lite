@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/frender-rs/ghost-lite/compare/v0.1.0...v0.1.1) (2023-01-13)
+
+
+### Bug Fixes
+
+* `pub` not working ([4830328](https://github.com/frender-rs/ghost-lite/commit/48303282223bca697e5c2fd7e9d8e3b7272b3932))
+
 ## 0.1.0 (2023-01-13)
 
 
