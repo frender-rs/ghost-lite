@@ -297,7 +297,7 @@ macro_rules! __impl_resolve_type_generics {
                     $(+ $tp_lt_bounds:lifetime)*
                     $($($ignore:literal)? +)?
                     $(
-                        $(? $tp_bound_relax_ignore:vis)?
+                        $(? $($tp_bound_relax_ignore:literal)?)?
                         $tp_bound:path
                     )?
                 )?
@@ -329,7 +329,7 @@ macro_rules! __impl_resolve_type_generics {
                             $(+ $tp_lt_bounds)*
                             $($($ignore)? +)?
                             $(
-                                $(? $tp_bound_relax_ignore)?
+                                $(? $($tp_bound_relax_ignore)?)?
                                 $tp_bound
                             )?
                         )?
