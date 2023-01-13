@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/frender-rs/ghost-lite/compare/v0.1.1...v0.1.2) (2023-01-13)
+
+
+### Bug Fixes
+
+* relaxed bound `?Sized` not working for derives ([c0a972f](https://github.com/frender-rs/ghost-lite/commit/c0a972fc3df36deb57ac86952cedfb7e8ab94a55))
+
 ## [0.1.1](https://github.com/frender-rs/ghost-lite/compare/v0.1.0...v0.1.1) (2023-01-13)
 
 
