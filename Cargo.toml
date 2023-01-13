@@ -3,6 +3,12 @@ name = "ghost-lite"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+description = "custom PhantomData types"
+homepage = "https://github.com/frender-rs/ghost-lite"
+documentation = "https://docs.rs/ghost-lite"
+repository = "https://github.com/frender-rs/ghost-lite"
+keywords = ["ghost", "phantom", "macro"]
+categories = ["rust-patterns"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
