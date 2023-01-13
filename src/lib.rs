@@ -33,25 +33,29 @@ macro_rules! expand_a_or_b {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __impl_value_namespace {
-    ([] $vis:vis $name:ident) => {
+    ([] $vis:tt $name:ident) => {
         $crate::__impl_value_namespace! {
             [__impl_value_namespace] $vis $name
         }
     };
-    ([$mod_value_namespace:ident] $vis:vis $name:ident) => {
+    ([$mod_value_namespace:ident] {$($vis:tt)*} $name:ident) => {
         mod $mod_value_namespace {
             $crate::__impl_value_namespace_use! {
-                $name $vis
+                $name $($vis)*
             }
         }
 
-        $vis use $mod_value_namespace::*;
+        #[doc(hidden)]
+        $($vis)* use $mod_value_namespace::*;
     };
 }
 
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __impl_value_namespace_use {
+    ($name:ident) => {
+        pub(super) use super::$name::$name;
+    };
     ($name:ident pub) => {
         pub use super::$name::$name;
     };
@@ -64,7 +68,7 @@ macro_rules! __impl_value_namespace_use {
     ($name:ident pub($(in)? crate $($p:tt)*)) => {
         pub(in crate $($p)*) use super::$name::$name;
     };
-    ($name:ident $vis:vis) => {
+    ($name:ident $($vis:tt)+) => {
         pub(super) use super::$name::$name;
     };
 }
@@ -98,7 +102,7 @@ macro_rules! __impl_phantom_type {
 #[macro_export]
 macro_rules! __impl_inner_attr {
     (
-        $vis:vis $name:ident $data:tt
+        $vis:tt $name:ident $data:tt
         mod_value_namespace $(= $mod_value_namespace:ident)?
     ) => {
         $crate::__impl_value_namespace! {
@@ -108,7 +112,7 @@ macro_rules! __impl_inner_attr {
         }
     };
     (
-        $vis:vis $name:ident $data:tt
+        $vis:tt $name:ident $data:tt
         derive $(( $($derive_macro_name:ident),* $(,)? ))?
     ) => {
         $($(
@@ -208,7 +212,7 @@ macro_rules! __impl_ghost_enum {
         {
             $attrs_inner:tt
             {$($attr:tt)*}
-            $vis:vis
+            {$($vis:tt)*}
             $name:ident
         }
         {$($rest:tt)+}
@@ -217,8 +221,9 @@ macro_rules! __impl_ghost_enum {
         $where_clause:tt
     } $phantom_types:tt) => {
         $($attr)*
-        $vis enum $name<$($rest)+ {
+        $($vis)* enum $name<$($rest)+ {
             $name,
+            #[doc(hidden)]
             __Phantom(
                 ::core::convert::Infallible,
                 ::core::marker::PhantomData<
@@ -236,7 +241,7 @@ macro_rules! __impl_ghost_inner_attrs {
         {
             {$(#![$inner_attr_name:ident $($inner_attr:tt)* ])*}
             $attrs:tt
-            $vis:vis
+            $vis:tt
             $name:ident
         }
         $rest:tt
@@ -365,7 +370,7 @@ macro_rules! __impl_resolve_type_generics {
 #[macro_export]
 macro_rules! __impl_default_mod_value_namespace {
     (
-        $vis:vis $name:ident
+        $vis:tt $name:ident
         $([mod_value_namespace $(= $mod_value_namespace:ident)?])?
         $([derive $($rest:tt)*])*
     ) => {
@@ -379,8 +384,8 @@ macro_rules! __impl_default_mod_value_namespace {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __impl_default_mod_value_namespace_impl {
-    ($vis:vis $name:ident mod_value_namespace $($rest:tt)*) => {};
-    ($vis:vis $name:ident) => {
+    ($vis:tt $name:ident mod_value_namespace $($rest:tt)*) => {};
+    ($vis:tt $name:ident) => {
         $crate::__impl_value_namespace! {
             []
             $vis
@@ -394,7 +399,8 @@ macro_rules! ghost {
     (
         $(#![$attr_inner_name:ident $($attr_inner:tt)*])*
         $(#[$($attr:tt)*])*
-        $vis:vis struct $name:ident <
+        $(pub $( ($($vis_path:tt)*) )?)?
+        struct $name:ident <
             $($rest:tt)+
     ) => {
         $(
@@ -402,20 +408,20 @@ macro_rules! ghost {
             use $crate::macro_docs::inner_attr::$attr_inner_name as _;
         )*
 
-        $crate::__impl_default_mod_value_namespace! {
-            $vis
-            $name
-            $([$attr_inner_name $($attr_inner)*])*
-        }
-
         $crate::__impl_resolve_type_generics_expand! {
             {
                 {$(#![$attr_inner_name $($attr_inner)*])*}
                 {$(#[$($attr)*])*}
-                $vis
+                {$(pub $( ($($vis_path)*) )?)?}
                 $name
             }
             {$($rest)+}
+        }
+
+        $crate::__impl_default_mod_value_namespace! {
+            {$(pub $( ($($vis_path)*) )?)?}
+            $name
+            $([$attr_inner_name $($attr_inner)*])*
         }
     };
 }
